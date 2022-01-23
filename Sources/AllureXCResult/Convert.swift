@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  Convert.swift
 //  
 //
 //  Created by Vladislav Kiryukhin on 22.12.2021.
@@ -52,7 +52,7 @@ struct Convert: ParsableCommand {
                 do {
                     try writeToOutput(report: report, creator: creator)
                 } catch {
-                    print("Error occurred: \(error.localizedDescription)")
+                    print("Error occurred: \(error)")
                     rollbackAlreadyConverted()
 
                     Self.exit(withError: ExitCode.failure)

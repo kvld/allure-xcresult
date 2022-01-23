@@ -22,8 +22,9 @@ enum XCResultExtractor {
             guard let testsRef = action.actionResult.testsRef else { continue }
 
             let destinationInfo = DestinationInfo(
-                identifier: action.runDestination.localComputerRecord.identifier,
-                name: action.runDestination.displayName
+                identifier: action.runDestination.targetDeviceRecord.identifier,
+                name: action.runDestination.targetDeviceRecord.name,
+                machineIdentifier: action.runDestination.localComputerRecord.identifier
             )
 
             let startedTime = action.startedTime
@@ -41,13 +42,17 @@ enum XCResultExtractor {
         for testRun in testRuns {
             guard let testPlanSummary = result.getTestPlanRunSummaries(id: testRun.id) else { continue }
 
-            let testsSummary = testPlanSummary.summaries
-                .flatMap(\.testableSummaries)
-                .flatMap(\.tests)
-                .flatMap { $0.extractTests() }
+            var testsSummaries: [TestSummary] = []
+            let testableSummaries = testPlanSummary.summaries.flatMap(\.testableSummaries)
+            for summary in testableSummaries {
+                let targetName = summary.targetName ?? "Default"
+                let tests = summary.tests.flatMap { $0.extractTests(targetName: targetName) }
+
+                testsSummaries.append(contentsOf: tests)
+            }
 
             autoreleasepool {
-                for testSummary in testsSummary {
+                for testSummary in testsSummaries {
                     var activities: [TestActivity] = []
 
                     if let summaryID = testSummary.summaryID,
@@ -109,8 +114,8 @@ private extension ActionTestSummaryGroup {
         return summaries
     }
 
-    func extractTests() -> [TestSummary] {
-        return _extractTests(path: [])
+    func extractTests(targetName: String) -> [TestSummary] {
+        return _extractTests(path: [targetName])
     }
 }
 

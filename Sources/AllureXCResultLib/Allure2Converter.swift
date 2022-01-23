@@ -17,14 +17,7 @@ enum Allure2Converter {
         let maxStop = steps.compactMap { $0.stop > 0 ? $0.stop : nil }.max()
 
         let startTime = minStart ?? testCase.testRun.startedTime.millis
-        var stopTime = maxStop ?? (startTime + testCase.summary.duration.millis)
-
-        // Crashed tests have wrong steps timeline but correct duration
-        // Try to fix them
-        if let maxStart = steps.compactMap({ $0.start > 0 ? $0.start : nil }).max(),
-           startTime + testCase.summary.duration.millis < maxStart {
-            stopTime = startTime + testCase.summary.duration.millis
-        }
+        let stopTime = maxStop ?? (startTime + testCase.summary.duration.millis)
 
         let statusDetails = steps.first(where: { $0.statusDetails != nil })?.statusDetails
 
@@ -71,7 +64,7 @@ extension Allure2Converter {
     }
 
     private static func makeHistoryID(for summary: TestSummary) -> String {
-        return (summary.path.suffix(1) + [summary.identifier]).joined(separator: "/")
+        return (summary.path.prefix(1) + [summary.identifier]).joined(separator: "/")
     }
 
     private static func makeAttachment(from attachment: TestActivity.Attachment) -> Attachment {
@@ -116,7 +109,7 @@ extension Allure2Converter {
     private static func makeLabels(for testCase: TestCase) -> [Label] {
         var labels: [Label] = []
 
-        if let parentSuite = testCase.summary.path.last {
+        if let parentSuite = testCase.summary.path.first {
             labels.append(Label(name: "parentSuite", value: parentSuite))
         }
 
@@ -124,8 +117,11 @@ extension Allure2Converter {
             labels.append(Label(name: "suite", value: String(suite)))
         }
 
+        let hostValue = "\(testCase.destination.name) (\(testCase.destination.identifier))"
+            + " on \(testCase.destination.machineIdentifier)"
+
         labels.append(
-            Label(name: "host", value: "\(testCase.destination.name) (\(testCase.destination.identifier))")
+            Label(name: "host", value: hostValue)
         )
 
         return labels

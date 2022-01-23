@@ -10,4 +10,5 @@ import Foundation
 struct DestinationInfo {
     let identifier: String
     let name: String
+    let machineIdentifier: String
 }

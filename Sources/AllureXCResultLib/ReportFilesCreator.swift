@@ -60,6 +60,11 @@ public final class ReportFilesCreator {
         let fullURL = outputURL.appendingPathComponent(filename)
 
         do {
+            if fileManager.fileExists(atPath: fullURL.path) {
+                print("File '\(fullURL.path)' already exists, overwrite it")
+                try fileManager.removeItem(at: fullURL)
+            }
+
             try fileManager.moveItem(at: url, to: fullURL)
         } catch {
             throw ConverterError.unableToWriteOutput(reason: error.localizedDescription)
