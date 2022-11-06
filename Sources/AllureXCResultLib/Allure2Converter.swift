@@ -67,7 +67,7 @@ extension Allure2Converter {
         return (summary.path.prefix(1) + [summary.identifier]).joined(separator: "/")
     }
 
-    private static func makeAttachment(from attachment: TestActivity.Attachment) -> Attachment {
+    private static func makeAttachment(from attachment: TestAttachment) -> Attachment {
         Attachment(name: attachment.name, source: attachment.name, type: nil)
     }
 
@@ -82,9 +82,7 @@ extension Allure2Converter {
             status = firstFailedSubstep.status
             statusDetails = firstFailedSubstep.statusDetails
         } else {
-            status = activity.activityType == "com.apple.dt.xctest.activity-type.testAssertionFailure"
-                ? .failed
-                : .passed
+            status = activity.activityType == .failure ? .failed : .passed
 
             statusDetails = status == .failed
                 ? StatusDetails(known: false, muted: false, flaky: false, message: activity.title, trace: "")

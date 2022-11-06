@@ -57,7 +57,21 @@ enum XCResultExtractor {
 
                     if let summaryID = testSummary.summaryID,
                        let actionTestSummary = result.getActionTestSummary(id: summaryID) {
-                        activities = actionTestSummary.activitySummaries.map { $0.extractActivity() }
+                        let failures = actionTestSummary.failureSummaries.compactMap { ($0, $0.extractFailure()) }
+
+                        let topLevelFailures = failures
+                            .filter { $0.0.isTopLevelFailure }
+                            .compactMap { $0.1?.makeActivity() }
+                        
+                        let failuresMap: [String: TestFailure] = failures.reduce(into: [:]) { partialResult, item in
+                            guard let item = item.1 else { return }
+
+                            partialResult[item.uuid] = item
+                        }
+
+                        activities = actionTestSummary.activitySummaries
+                            .map { $0.extractActivity(allFailures: failuresMap) } + topLevelFailures
+                        activities = activities.sorted(by: { $0.startedTime ?? Date() < $1.startedTime ?? Date() })
                     }
 
                     let attachments = activities
@@ -100,8 +114,8 @@ private extension ActionTestSummaryGroup {
 
         for test in subtests {
             let test = TestSummary(
-                identifier: test.identifier,
-                name: test.name,
+                identifier: test.identifier ?? UUID().uuidString,
+                name: test.name ?? "",
                 path: path,
                 status: .init(from: test.testStatus),
                 duration: test.duration ?? 0.0,
@@ -120,27 +134,57 @@ private extension ActionTestSummaryGroup {
 }
 
 private extension ActionTestActivitySummary {
-    func extractActivity() -> TestActivity {
-        let attachments: [TestActivity.Attachment] = attachments.compactMap { attachment in
+    func extractActivity(allFailures: [String: TestFailure]) -> TestActivity {
+        let attachments: [TestAttachment] = attachments.compactMap { attachment in
             guard let filename = attachment.filename, let payloadRefID = attachment.payloadRef?.id else { return nil }
 
             return .init(name: filename, filename: filename, payloadRefID: payloadRefID)
         }
 
+        let failures = failureSummaryIDs.compactMap { allFailures[$0]?.makeActivity() }
+        let subactivities = (subactivities.map { $0.extractActivity(allFailures: allFailures) } + failures)
+            .sorted(by: { $0.startedTime ?? Date() < $1.startedTime ?? Date() })
+
         return TestActivity(
             title: title,
-            activityType: activityType,
+            activityType: .normal,
             uuid: uuid,
             startedTime: start,
             endedTime: finish,
-            subactivities: subactivities.map { $0.extractActivity() },
+            subactivities: subactivities,
+            attachments: attachments
+        )
+    }
+}
+
+private extension ActionTestFailureSummary {
+    func extractFailure() -> TestFailure? {
+        guard let timestamp = timestamp else {
+            return nil
+        }
+
+        let attachments: [TestAttachment] = attachments.compactMap { attachment in
+            guard let filename = attachment.filename, let payloadRefID = attachment.payloadRef?.id else {
+                return nil
+            }
+
+            return .init(name: filename, filename: filename, payloadRefID: payloadRefID)
+        }
+
+        return TestFailure(
+            uuid: uuid,
+            message: message,
+            detailedDescription: detailedDescription,
+            issueType: issueType,
+            file: fileName.flatMap { .init(absoluteFilePath: $0, lineNumber: lineNumber) },
+            timestamp: timestamp,
             attachments: attachments
         )
     }
 }
 
 private extension TestActivity {
-    func getAllAttachments() -> [Attachment] {
+    func getAllAttachments() -> [TestAttachment] {
         subactivities.flatMap { $0.getAllAttachments() } + attachments
     }
 }
