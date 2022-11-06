@@ -1,0 +1,22 @@
+name: Build release
+
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  build:
+    runs-on: macos-12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run build
+        run: |
+          swift build -c release && mv .build/release/AllureXCResult ./allure-xcresult
+  
+      - name: Upload executable
+        uses: actions/upload-artifact@v2
+        with: 
+          name: allure-xcresult
+          path: ./allure-xcresult
