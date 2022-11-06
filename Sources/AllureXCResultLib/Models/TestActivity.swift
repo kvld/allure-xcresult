@@ -9,16 +9,15 @@ import Foundation
 
 struct TestActivity {
     let title: String
-    let activityType: String
+    let activityType: ActivityType
     let uuid: String
     let startedTime: Date?
     let endedTime: Date?
     let subactivities: [TestActivity]
-    let attachments: [Attachment]
+    let attachments: [TestAttachment]
 
-    struct Attachment {
-        let name: String
-        let filename: String
-        let payloadRefID: String
+    enum ActivityType {
+        case failure
+        case normal
     }
 }

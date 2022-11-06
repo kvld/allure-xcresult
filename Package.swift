@@ -12,7 +12,7 @@ let package = Package(
         .library(name: "AllureXCResultLib", targets: ["AllureXCResultLib"])
     ],
     dependencies: [
-        .package(url: "https://github.com/davidahouse/XCResultKit.git", from: "0.9.2"),
+        .package(url: "https://github.com/davidahouse/XCResultKit.git", from: "1.0.1"),
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.0.2"),
     ],
     targets: [
