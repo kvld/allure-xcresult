@@ -104,8 +104,8 @@ enum XCResultExtractor {
     }
 }
 
-private extension ActionTestSummaryGroup {
-    private func _extractTests(path: [String]) -> [TestSummary] {
+extension ActionTestSummaryGroup {
+    fileprivate func _extractTests(path: [String]) -> [TestSummary] {
         var summaries: [TestSummary] = []
 
         for group in subtestGroups {
@@ -133,8 +133,8 @@ private extension ActionTestSummaryGroup {
     }
 }
 
-private extension ActionTestActivitySummary {
-    func extractActivity(allFailures: [String: TestFailure]) -> TestActivity {
+extension ActionTestActivitySummary {
+    fileprivate func extractActivity(allFailures: [String: TestFailure]) -> TestActivity {
         let attachments: [TestAttachment] = attachments.compactMap { attachment in
             guard let filename = attachment.filename, let payloadRefID = attachment.payloadRef?.id else { return nil }
 
@@ -157,8 +157,8 @@ private extension ActionTestActivitySummary {
     }
 }
 
-private extension ActionTestFailureSummary {
-    func extractFailure() -> TestFailure? {
+extension ActionTestFailureSummary {
+    fileprivate func extractFailure() -> TestFailure? {
         guard let timestamp = timestamp else {
             return nil
         }
@@ -183,8 +183,8 @@ private extension ActionTestFailureSummary {
     }
 }
 
-private extension TestActivity {
-    func getAllAttachments() -> [TestAttachment] {
+extension TestActivity {
+    fileprivate func getAllAttachments() -> [TestAttachment] {
         subactivities.flatMap { $0.getAllAttachments() } + attachments
     }
 }

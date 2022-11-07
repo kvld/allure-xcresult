@@ -7,7 +7,7 @@
 
 import Foundation
 
-// see: https://github.com/allure-framework/allure-java/blob/master/allure-model/src/main/java/io/qameta/allure/model/StepResult.java
+// see: https://github.com/allure-framework/allure-java/tree/2.17.2/allure-model/src/main/java/io/qameta/allure/model/StepResult.java
 public struct StepResult: Encodable {
     public let name: String
     public let status: Status

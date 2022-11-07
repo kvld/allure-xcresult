@@ -105,24 +105,39 @@ extension Allure2Converter {
     }
 
     private static func makeLabels(for testCase: TestCase) -> [Label] {
-        var labels: [Label] = []
+        var labels: [String: String] = [:]
 
         if let parentSuite = testCase.summary.path.first {
-            labels.append(Label(name: "parentSuite", value: parentSuite))
+            labels["parentSuite"] = parentSuite
         }
 
         if let suite = testCase.summary.identifier.split(separator: "/").first {
-            labels.append(Label(name: "suite", value: String(suite)))
+            labels["suite"] = String(suite)
         }
 
         let hostValue = "\(testCase.destination.name) (\(testCase.destination.identifier))"
             + " on \(testCase.destination.machineIdentifier)"
+        labels["host"] = hostValue
 
-        labels.append(
-            Label(name: "host", value: hostValue)
-        )
+        let allureLabels = extractAllureLabels(from: testCase.activities)
 
         return labels
+            .merging(allureLabels) { _, rhs in rhs }
+            .map { Label(name: $0.key, value: $0.value) }
+    }
+
+    private static func extractAllureLabels(from activities: [TestActivity]) -> [String: String] {
+        activities
+            .filter { $0.title.starts(with: "allure_label") }
+            .reduce(into: [:]) { result, activity in
+                let parts = activity.title.dropFirst(13).split(separator: "_") // allure_label_
+                guard parts.count >= 2 else { return }
+
+                let key = String(parts[0])
+                let value = parts.dropFirst().joined(separator: "_")
+
+                result[key] = value
+            }
     }
 }
 
@@ -132,10 +147,10 @@ extension Allure2Converter {
     }
 }
 
-private extension Date {
-    var millis: Int { Int(timeIntervalSince1970 * 1000) }
+extension Date {
+    fileprivate var millis: Int { Int(timeIntervalSince1970 * 1000) }
 }
 
-private extension TimeInterval {
-    var millis: Int { Int(self * 1000) }
+extension TimeInterval {
+    fileprivate var millis: Int { Int(self * 1000) }
 }
