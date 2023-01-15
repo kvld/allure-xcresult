@@ -11,6 +11,8 @@
 		465237ED2918318100C8CEF1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 465237EC2918318100C8CEF1 /* ContentView.swift */; };
 		465237EF2918318700C8CEF1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 465237EE2918318700C8CEF1 /* Assets.xcassets */; };
 		465237FC2918318700C8CEF1 /* SampleAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 465237FB2918318700C8CEF1 /* SampleAppTests.swift */; };
+		4652385229199A1100C8CEF1 /* AllureXCTest in Frameworks */ = {isa = PBXBuildFile; productRef = 4652385129199A1100C8CEF1 /* AllureXCTest */; };
+		4652385429199A4600C8CEF1 /* AllureLabelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4652385329199A4600C8CEF1 /* AllureLabelsTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,6 +32,7 @@
 		465237EE2918318700C8CEF1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		465237F72918318700C8CEF1 /* SampleAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SampleAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		465237FB2918318700C8CEF1 /* SampleAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleAppTests.swift; sourceTree = "<group>"; };
+		4652385329199A4600C8CEF1 /* AllureLabelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllureLabelsTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,6 +47,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4652385229199A1100C8CEF1 /* AllureXCTest in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -53,9 +57,11 @@
 		465237DE2918318100C8CEF1 = {
 			isa = PBXGroup;
 			children = (
+				465238482919973C00C8CEF1 /* Packages */,
 				465237E92918318100C8CEF1 /* SampleApp */,
 				465237FA2918318700C8CEF1 /* SampleAppTests */,
 				465237E82918318100C8CEF1 /* Products */,
+				4652385029199A1100C8CEF1 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -82,8 +88,23 @@
 			isa = PBXGroup;
 			children = (
 				465237FB2918318700C8CEF1 /* SampleAppTests.swift */,
+				4652385329199A4600C8CEF1 /* AllureLabelsTests.swift */,
 			);
 			path = SampleAppTests;
+			sourceTree = "<group>";
+		};
+		465238482919973C00C8CEF1 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		4652385029199A1100C8CEF1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -120,6 +141,9 @@
 				465237F92918318700C8CEF1 /* PBXTargetDependency */,
 			);
 			name = SampleAppTests;
+			packageProductDependencies = (
+				4652385129199A1100C8CEF1 /* AllureXCTest */,
+			);
 			productName = SampleAppTests;
 			productReference = 465237F72918318700C8CEF1 /* SampleAppTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -151,6 +175,9 @@
 				Base,
 			);
 			mainGroup = 465237DE2918318100C8CEF1;
+			packageReferences = (
+				4652384D291998B300C8CEF1 /* XCRemoteSwiftPackageReference "allure-xcresult" */,
+			);
 			productRefGroup = 465237E82918318100C8CEF1 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -194,6 +221,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				465237FC2918318700C8CEF1 /* SampleAppTests.swift in Sources */,
+				4652385429199A4600C8CEF1 /* AllureLabelsTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -443,6 +471,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4652384D291998B300C8CEF1 /* XCRemoteSwiftPackageReference "allure-xcresult" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "file://../../../allure-xcresult";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4652385129199A1100C8CEF1 /* AllureXCTest */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4652384D291998B300C8CEF1 /* XCRemoteSwiftPackageReference "allure-xcresult" */;
+			productName = AllureXCTest;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 465237DF2918318100C8CEF1 /* Project object */;
 }

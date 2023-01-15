@@ -11,7 +11,7 @@ enum Allure2Converter {
     static func convert(testCase: TestCase) throws -> (test: TestResult, attachments: [LazyAttachment]) {
         let uuid = UUID().uuidString.lowercased()
 
-        let steps = testCase.activities.map { Self.makeStep(from: $0) }
+        let steps = testCase.activities.compactMap { Self.makeStep(from: $0) }
 
         let minStart = steps.compactMap { $0.start > 0 ? $0.start : nil }.min()
         let maxStop = steps.compactMap { $0.stop > 0 ? $0.stop : nil }.max()
@@ -71,8 +71,12 @@ extension Allure2Converter {
         Attachment(name: attachment.name, source: attachment.name, type: nil)
     }
 
-    private static func makeStep(from activity: TestActivity) -> StepResult {
-        let substeps = activity.subactivities.map { Self.makeStep(from: $0) }
+    private static func makeStep(from activity: TestActivity) -> StepResult? {
+        if activity.isAllureLabel {
+            return nil
+        }
+
+        let substeps = activity.subactivities.compactMap { Self.makeStep(from: $0) }
         let attachments = activity.attachments.map { Self.makeAttachment(from: $0) }
 
         let status: Status
@@ -128,16 +132,32 @@ extension Allure2Converter {
 
     private static func extractAllureLabels(from activities: [TestActivity]) -> [String: String] {
         activities
-            .filter { $0.title.starts(with: "allure_label") }
+            .filter { $0.isAllureLabel }
             .reduce(into: [:]) { result, activity in
-                let parts = activity.title.dropFirst(13).split(separator: "_") // allure_label_
-                guard parts.count >= 2 else { return }
-
-                let key = String(parts[0])
-                let value = parts.dropFirst().joined(separator: "_")
+                guard let (key, value) = activity.allureLabel else {
+                    return
+                }
 
                 result[key] = value
             }
+    }
+}
+
+extension TestActivity {
+    private static let allureLabel = "allure_label"
+
+    var isAllureLabel: Bool {
+        title.starts(with: TestActivity.allureLabel)
+    }
+
+    var allureLabel: (key: String, value: String)? {
+        let parts = title.dropFirst(TestActivity.allureLabel.count + 1).split(separator: "_") // label + '_'
+        guard parts.count >= 2 else { return nil }
+
+        let key = String(parts[0])
+        let value = parts.dropFirst().joined(separator: "_")
+
+        return (key, value)
     }
 }
 
