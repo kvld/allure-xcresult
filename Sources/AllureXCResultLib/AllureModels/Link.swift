@@ -7,7 +7,7 @@
 
 import Foundation
 
-// see: https://github.com/allure-framework/allure-java/blob/master/allure-model/src/main/java/io/qameta/allure/model/Link.java
+// see: https://github.com/allure-framework/allure-java/tree/2.17.2/allure-model/src/main/java/io/qameta/allure/model/Link.java
 public struct Link: Encodable {
     public let name: String
     public let url: String

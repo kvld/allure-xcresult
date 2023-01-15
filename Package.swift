@@ -9,7 +9,8 @@ let package = Package(
         .macOS(.v10_15)
     ],
     products: [
-        .library(name: "AllureXCResultLib", targets: ["AllureXCResultLib"])
+        .library(name: "AllureXCResultLib", targets: ["AllureXCResultLib"]),
+        .library(name: "AllureXCTest", targets: ["AllureXCTest"])
     ],
     dependencies: [
         .package(url: "https://github.com/davidahouse/XCResultKit.git", from: "1.0.1"),
@@ -28,6 +29,10 @@ let package = Package(
                 "AllureXCResultLib",
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
             ]
-        )
+        ),
+        .target(
+            name: "AllureXCTest",
+            dependencies: []
+        ),
     ]
 )
