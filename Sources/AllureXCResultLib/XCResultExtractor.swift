@@ -24,7 +24,8 @@ enum XCResultExtractor {
             let destinationInfo = DestinationInfo(
                 identifier: action.runDestination.targetDeviceRecord.identifier,
                 name: action.runDestination.targetDeviceRecord.name,
-                machineIdentifier: action.runDestination.localComputerRecord.identifier
+                machineIdentifier: action.runDestination.localComputerRecord.identifier,
+                operatingSystemVersion: action.runDestination.targetDeviceRecord.operatingSystemVersion
             )
 
             let startedTime = action.startedTime

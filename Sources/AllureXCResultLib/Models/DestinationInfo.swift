@@ -11,4 +11,5 @@ struct DestinationInfo {
     let identifier: String
     let name: String
     let machineIdentifier: String
+    let operatingSystemVersion: String
 }

@@ -19,12 +19,14 @@ enum Allure2Converter {
         let startTime = minStart ?? testCase.testRun.startedTime.millis
         let stopTime = maxStop ?? (startTime + testCase.summary.duration.millis)
 
+        let parameters = Self.makeParameters(testCase: testCase)
         let statusDetails = steps.first(where: { $0.statusDetails != nil })?.statusDetails
+        let historyId = Self.makeHistoryID(for: testCase.summary, parameters: parameters)
 
         do {
             let test = try TestResult(
                 uuid: uuid,
-                historyId: Self.makeHistoryID(for: testCase.summary),
+                historyId: historyId,
                 testCaseId: nil,
                 testCaseName: nil,
                 fullName: testCase.summary.identifier,
@@ -38,7 +40,7 @@ enum Allure2Converter {
                 descriptionHtml: nil,
                 steps: steps,
                 attachments: [],
-                parameters: [],
+                parameters: parameters,
                 start: startTime,
                 stop: stopTime
             )
@@ -53,6 +55,29 @@ enum Allure2Converter {
 }
 
 extension Allure2Converter {
+    private static func makeParameters(testCase: TestCase) -> [Parameter] {
+        var result: [Parameter] = []
+        let destinationParameter = Parameter(
+            name: "modelName",
+            value: testCase.destination.name,
+            excluded: false,
+            mode: .default
+        )
+        let operatingSystemVersionParameter = Parameter(
+            name: "operatingSystemVersion",
+            value: testCase.destination.operatingSystemVersion,
+            excluded: false,
+            mode: .default
+        )
+        result.append(
+            contentsOf: [
+                destinationParameter,
+                operatingSystemVersionParameter,
+            ]
+        )
+        return result
+    }
+
     private static func makeStatus(for summary: TestSummary) throws -> Status {
         switch summary.status {
         case .success: return .passed
@@ -63,8 +88,11 @@ extension Allure2Converter {
         }
     }
 
-    private static func makeHistoryID(for summary: TestSummary) -> String {
-        return (summary.path.prefix(1) + [summary.identifier]).joined(separator: "/")
+    private static func makeHistoryID(
+        for summary: TestSummary,
+        parameters: [Parameter]
+    ) -> String {
+        return (summary.path.prefix(1) + [summary.identifier] + parameters.map { $0.value }).joined(separator: "/")
     }
 
     private static func makeAttachment(from attachment: TestAttachment) -> Attachment {
