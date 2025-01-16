@@ -37,7 +37,7 @@ public enum Result {
 }
 
 public enum ReportConverter {
-    public static var providers: AllureReportProviders = ReportConverterProviders(
+    public static var configuration = Configuration(
         historyIDProvider: DefaultHistoryIDProvider(),
         parametersProvider: DefaultParametersProvider()
     )
@@ -53,8 +53,8 @@ public enum ReportConverter {
                 do {
                     let convertedTest = try Allure2Converter.convert(
                         testCase: testCase,
-                        historyIDProvider: providers.historyIDProvider,
-                        parametersProvider: providers.parametersProvider
+                        historyIDProvider: configuration.historyIDProvider,
+                        parametersProvider: configuration.parametersProvider
                     )
 
                     let result = AllureReport(
