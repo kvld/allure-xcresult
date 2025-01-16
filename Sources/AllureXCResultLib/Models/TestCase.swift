@@ -7,10 +7,10 @@
 
 import Foundation
 
-struct TestCase {
-    let summary: TestSummary
-    let activities: [TestActivity]
-    let destination: DestinationInfo
-    let testRun: TestRun
-    let attachments: [LazyAttachment]
+public struct TestCase {
+    public let summary: TestSummary
+    public let activities: [TestActivity]
+    public let destination: DestinationInfo
+    public let testRun: TestRun
+    public let attachments: [LazyAttachment]
 }

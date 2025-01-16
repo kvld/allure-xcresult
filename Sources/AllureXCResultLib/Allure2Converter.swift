@@ -8,7 +8,11 @@
 import Foundation
 
 enum Allure2Converter {
-    static func convert(testCase: TestCase) throws -> (test: TestResult, attachments: [LazyAttachment]) {
+    static func convert(
+        testCase: TestCase,
+        historyIDProvider: HistoryIDProvider,
+        parametersProvider: ParametersProvider
+    ) throws -> (test: TestResult, attachments: [LazyAttachment]) {
         let uuid = UUID().uuidString.lowercased()
 
         let steps = testCase.activities.compactMap { Self.makeStep(from: $0) }
@@ -19,9 +23,9 @@ enum Allure2Converter {
         let startTime = minStart ?? testCase.testRun.startedTime.millis
         let stopTime = maxStop ?? (startTime + testCase.summary.duration.millis)
 
-        let parameters = Self.makeParameters(testCase: testCase)
+        let parameters = parametersProvider.makeParameters(testCase: testCase)
         let statusDetails = steps.first(where: { $0.statusDetails != nil })?.statusDetails
-        let historyId = Self.makeHistoryID(for: testCase.summary, parameters: parameters)
+        let historyId = historyIDProvider.makeHistoryID(testCase: testCase)
 
         do {
             let test = try TestResult(
@@ -55,29 +59,6 @@ enum Allure2Converter {
 }
 
 extension Allure2Converter {
-    private static func makeParameters(testCase: TestCase) -> [Parameter] {
-        var result: [Parameter] = []
-        let destinationParameter = Parameter(
-            name: "modelName",
-            value: testCase.destination.name,
-            excluded: false,
-            mode: .default
-        )
-        let operatingSystemVersionParameter = Parameter(
-            name: "operatingSystemVersion",
-            value: testCase.destination.operatingSystemVersion,
-            excluded: false,
-            mode: .default
-        )
-        result.append(
-            contentsOf: [
-                destinationParameter,
-                operatingSystemVersionParameter,
-            ]
-        )
-        return result
-    }
-
     private static func makeStatus(for summary: TestSummary) throws -> Status {
         switch summary.status {
         case .success: return .passed
@@ -87,14 +68,7 @@ extension Allure2Converter {
             throw ConvertationError.unknownStatus("Unknown status for '\(value)'")
         }
     }
-
-    private static func makeHistoryID(
-        for summary: TestSummary,
-        parameters: [Parameter]
-    ) -> String {
-        return (summary.path.prefix(1) + [summary.identifier] + parameters.map { $0.value }).joined(separator: "/")
-    }
-
+    
     private static func makeAttachment(from attachment: TestAttachment) -> Attachment {
         Attachment(name: attachment.name, source: attachment.name, type: nil)
     }

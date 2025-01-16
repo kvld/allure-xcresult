@@ -7,16 +7,16 @@
 
 import Foundation
 
-struct TestFailure {
-    let uuid: String
-    let message: String?
-    let detailedDescription: String?
-    let issueType: String?
-    let file: SourceFileReference?
-    let timestamp: Date
-    let attachments: [TestAttachment]
+public struct TestFailure {
+    public let uuid: String
+    public let message: String?
+    public let detailedDescription: String?
+    public let issueType: String?
+    public let file: SourceFileReference?
+    public let timestamp: Date
+    public let attachments: [TestAttachment]
 
-    struct SourceFileReference {
+    public struct SourceFileReference {
         let absoluteFilePath: String
         let lineNumber: Int
 

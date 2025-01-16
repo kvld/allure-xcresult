@@ -7,9 +7,9 @@
 
 import Foundation
 
-struct DestinationInfo {
-    let identifier: String
-    let name: String
-    let machineIdentifier: String
-    let operatingSystemVersion: String
+public struct DestinationInfo {
+    public let identifier: String
+    public let name: String
+    public let machineIdentifier: String
+    public let operatingSystemVersion: String
 }
