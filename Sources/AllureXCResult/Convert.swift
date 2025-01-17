@@ -10,7 +10,7 @@ import ArgumentParser
 import AllureXCResultLib
 
 struct Convert: ParsableCommand {
-    static var configuration = CommandConfiguration(version: "1.2.0")
+    static var configuration = CommandConfiguration(version: "1.3.0")
 
     @Option(name: .long, help: "Input *.xcresult path")
     var input: String
