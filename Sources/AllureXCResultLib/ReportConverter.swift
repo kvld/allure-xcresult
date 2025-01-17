@@ -37,13 +37,25 @@ public enum Result {
 }
 
 public enum ReportConverter {
+    public static var configuration = Configuration(
+        historyIDProvider: DefaultHistoryIDProvider(),
+        parametersProvider: DefaultParametersProvider()
+    )
+
     /// Return each converted test separately.
     /// Operation will be stopped if `StreamResult.fatalError` returned in handler.
-    public static func convertOneByOne(xcResultPath: String, handler: @escaping (StreamResult) -> Void) {
+    public static func convertOneByOne(
+        xcResultPath: String,
+        handler: @escaping (StreamResult) -> Void
+    ) {
         do {
             try XCResultExtractor.extract(from: xcResultPath) { testCase in
                 do {
-                    let convertedTest = try Allure2Converter.convert(testCase: testCase)
+                    let convertedTest = try Allure2Converter.convert(
+                        testCase: testCase,
+                        historyIDProvider: configuration.historyIDProvider,
+                        parametersProvider: configuration.parametersProvider
+                    )
 
                     let result = AllureReport(
                         tests: [convertedTest.test],
