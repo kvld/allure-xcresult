@@ -16,7 +16,7 @@ jobs:
           swift build -c release && mv .build/release/AllureXCResult ./allure-xcresult
   
       - name: Upload executable
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with: 
           name: allure-xcresult
           path: ./allure-xcresult
