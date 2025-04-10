@@ -58,6 +58,7 @@ extension Allure2Converter {
         case .success: return .passed
         case .failure: return .failed
         case .skipped: return .skipped
+        case .expectedFailure: return .passed
         case .unknown(let value):
             throw ConvertationError.unknownStatus("Unknown status for '\(value)'")
         }

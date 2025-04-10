@@ -19,6 +19,7 @@ struct TestSummary {
         case success
         case failure
         case skipped
+        case expectedFailure
         case unknown(String)
 
         init(from value: String) {
@@ -26,6 +27,7 @@ struct TestSummary {
             case "Success": self = .success
             case "Failure": self = .failure
             case "Skipped": self = .skipped
+            case "Expected Failure": self = .expectedFailure
             default: self = .unknown(value)
             }
         }
