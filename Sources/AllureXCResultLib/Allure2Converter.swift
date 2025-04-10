@@ -8,7 +8,11 @@
 import Foundation
 
 enum Allure2Converter {
-    static func convert(testCase: TestCase) throws -> (test: TestResult, attachments: [LazyAttachment]) {
+    static func convert(
+        testCase: TestCase,
+        historyIDProvider: HistoryIDProvider,
+        parametersProvider: ParametersProvider
+    ) throws -> (test: TestResult, attachments: [LazyAttachment]) {
         let uuid = UUID().uuidString.lowercased()
 
         let steps = testCase.activities.compactMap { Self.makeStep(from: $0) }
@@ -19,12 +23,14 @@ enum Allure2Converter {
         let startTime = minStart ?? testCase.testRun.startedTime.millis
         let stopTime = maxStop ?? (startTime + testCase.summary.duration.millis)
 
+        let parameters = parametersProvider.makeParameters(testCase: testCase)
         let statusDetails = steps.first(where: { $0.statusDetails != nil })?.statusDetails
+        let historyId = historyIDProvider.makeHistoryID(testCase: testCase)
 
         do {
             let test = try TestResult(
                 uuid: uuid,
-                historyId: Self.makeHistoryID(for: testCase.summary),
+                historyId: historyId,
                 testCaseId: nil,
                 testCaseName: nil,
                 fullName: testCase.summary.identifier,
@@ -38,7 +44,7 @@ enum Allure2Converter {
                 descriptionHtml: nil,
                 steps: steps,
                 attachments: [],
-                parameters: [],
+                parameters: parameters,
                 start: startTime,
                 stop: stopTime
             )
@@ -63,11 +69,7 @@ extension Allure2Converter {
             throw ConvertationError.unknownStatus("Unknown status for '\(value)'")
         }
     }
-
-    private static func makeHistoryID(for summary: TestSummary) -> String {
-        return (summary.path.prefix(1) + [summary.identifier]).joined(separator: "/")
-    }
-
+    
     private static func makeAttachment(from attachment: TestAttachment) -> Attachment {
         Attachment(name: attachment.name, source: attachment.name, type: nil)
     }

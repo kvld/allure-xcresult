@@ -1,6 +1,6 @@
 //
 //  Parameter.swift
-//  
+//
 //
 //  Created by Vladislav Kiryukhin on 20.12.2021.
 //
@@ -18,5 +18,17 @@ public struct Parameter: Encodable {
         case hidden
         case masked
         case `default`
+    }
+
+    public init(
+        name: String,
+        value: String,
+        excluded: Bool,
+        mode: Mode
+    ) {
+        self.name = name
+        self.value = value
+        self.excluded = excluded
+        self.mode = mode
     }
 }

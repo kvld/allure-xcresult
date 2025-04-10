@@ -7,15 +7,15 @@
 
 import Foundation
 
-struct TestSummary {
-    let identifier: String
-    let name: String
-    let path: [String]
-    let status: Status
-    let duration: TimeInterval
-    let summaryID: String?
+public struct TestSummary {
+    public let identifier: String
+    public let name: String
+    public let path: [String]
+    public let status: Status
+    public let duration: TimeInterval
+    public let summaryID: String?
 
-    enum Status {
+    public enum Status {
         case success
         case failure
         case skipped

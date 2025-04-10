@@ -7,9 +7,9 @@
 
 import Foundation
 
-struct TestRun {
-    let id: String
-    let startedTime: Date
-    let endedTime: Date
-    let destinationInfo: DestinationInfo
+public struct TestRun {
+    public let id: String
+    public let startedTime: Date
+    public let endedTime: Date
+    public let destinationInfo: DestinationInfo
 }

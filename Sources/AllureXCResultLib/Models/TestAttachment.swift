@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct TestAttachment {
-    let name: String
-    let filename: String
-    let payloadRefID: String
+public struct TestAttachment {
+    public let name: String
+    public let filename: String
+    public let payloadRefID: String
 }

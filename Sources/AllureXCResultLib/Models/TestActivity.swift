@@ -7,16 +7,16 @@
 
 import Foundation
 
-struct TestActivity {
-    let title: String
-    let activityType: ActivityType
-    let uuid: String
-    let startedTime: Date?
-    let endedTime: Date?
-    let subactivities: [TestActivity]
-    let attachments: [TestAttachment]
+public struct TestActivity {
+    public let title: String
+    public let activityType: ActivityType
+    public let uuid: String
+    public let startedTime: Date?
+    public let endedTime: Date?
+    public let subactivities: [TestActivity]
+    public let attachments: [TestAttachment]
 
-    enum ActivityType {
+    public enum ActivityType {
         case failure
         case normal
     }
