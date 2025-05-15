@@ -1,6 +1,6 @@
 //
 //  Allure2Converter.swift
-//  
+//
 //
 //  Created by Vladislav Kiryukhin on 21.12.2021.
 //
@@ -69,7 +69,7 @@ extension Allure2Converter {
             throw ConvertationError.unknownStatus("Unknown status for '\(value)'")
         }
     }
-    
+
     private static func makeAttachment(from attachment: TestAttachment) -> Attachment {
         Attachment(name: attachment.name, source: attachment.name, type: nil)
     }
@@ -112,55 +112,56 @@ extension Allure2Converter {
     }
 
     private static func makeLabels(for testCase: TestCase) -> [Label] {
-        var labels: [String: String] = [:]
+        var labels: [String: [String]] = [:]
 
         if let parentSuite = testCase.summary.path.first {
-            labels["parentSuite"] = parentSuite
+            labels["parentSuite"] = [parentSuite]
         }
 
         if let suite = testCase.summary.identifier.split(separator: "/").first {
-            labels["suite"] = String(suite)
+            labels["suite"] = [String(suite)]
         }
 
         let hostValue = "\(testCase.destination.name) (\(testCase.destination.identifier))"
-            + " on \(testCase.destination.machineIdentifier)"
-        labels["host"] = hostValue
+        + " on \(testCase.destination.machineIdentifier)"
+        labels["host"] = [hostValue]
 
         let allureLabels = extractAllureLabels(from: testCase.activities)
 
         return labels
             .merging(allureLabels) { _, rhs in rhs }
-            .map { Label(name: $0.key, value: $0.value) }
+            .flatMap { key, values in
+                values.map { Label(name: key, value: $0) }
+            }
     }
 
-    private static func extractAllureLabels(from activities: [TestActivity]) -> [String: String] {
+    private static func extractAllureLabels(from activities: [TestActivity]) -> [String: [String]] {
         activities
             .filter { $0.isAllureLabel }
-            .reduce(into: [:]) { result, activity in
-                guard let (key, value) = activity.allureLabel else {
-                    return
-                }
-
-                result[key] = value
+            .reduce(into: [String: [String]]()) { result, activity in
+                guard let (key, value) = activity.allureLabel else { return }
+                result[key, default: []].append(value)
             }
     }
 }
 
 extension TestActivity {
-    private static let allureLabel = "allure_label"
+    private static let allureLabelPrefix = "allure_label_"
 
     var isAllureLabel: Bool {
-        title.starts(with: TestActivity.allureLabel)
+        title.hasPrefix(Self.allureLabelPrefix)
     }
 
     var allureLabel: (key: String, value: String)? {
-        let parts = title.dropFirst(TestActivity.allureLabel.count + 1).split(separator: "_") // label + '_'
-        guard parts.count >= 2 else { return nil }
+        guard isAllureLabel else { return nil }
 
-        let key = String(parts[0])
-        let value = parts.dropFirst().joined(separator: "_")
+        let components = title
+            .dropFirst(Self.allureLabelPrefix.count)
+            .split(separator: "_", maxSplits: 1)
 
-        return (key, value)
+        guard components.count == 2 else { return nil }
+
+        return (String(components[0]), String(components[1]))
     }
 }
 
