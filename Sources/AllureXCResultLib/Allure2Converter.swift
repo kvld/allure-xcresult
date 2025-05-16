@@ -35,7 +35,7 @@ enum Allure2Converter {
                 testCaseName: nil,
                 fullName: testCase.summary.identifier,
                 labels: Self.makeLabels(for: testCase),
-                links: [],
+                links: Self.makeAllureLinks(for: testCase),
                 name: testCase.summary.name,
                 status: Self.makeStatus(for: testCase.summary),
                 statusDetails: statusDetails,
@@ -75,7 +75,7 @@ extension Allure2Converter {
     }
 
     private static func makeStep(from activity: TestActivity) -> StepResult? {
-        if activity.isAllureLabel {
+        if activity.isAllureLabel || activity.isAllureLink {
             return nil
         }
 
@@ -143,14 +143,29 @@ extension Allure2Converter {
                 result[key, default: []].append(value)
             }
     }
+
+    private static func makeAllureLinks(for testCase: TestCase) -> [Link] {
+        testCase
+            .activities
+            .compactMap { activity in
+                guard let (name, type, url) = activity.allureLink else { return nil }
+                return Link(name: name, url: url, type: type)
+            }
+    }
 }
 
 extension TestActivity {
     private static let allureLabelPrefix = "allure_label_"
+    private static let allureLinkPrefix = "allure_link_"
 
     var isAllureLabel: Bool {
         title.hasPrefix(Self.allureLabelPrefix)
     }
+
+    var isAllureLink: Bool {
+        title.hasPrefix(Self.allureLinkPrefix)
+    }
+
 
     var allureLabel: (key: String, value: String)? {
         guard isAllureLabel else { return nil }
@@ -162,6 +177,22 @@ extension TestActivity {
         guard components.count == 2 else { return nil }
 
         return (String(components[0]), String(components[1]))
+    }
+
+    var allureLink: (name: String, type: String, url: String)? {
+        guard isAllureLink else { return nil }
+
+        let components = title
+            .dropFirst(Self.allureLinkPrefix.count)
+            .split(separator: "_", maxSplits: 2)
+
+        guard components.count == 3 else { return nil }
+
+        return (
+            name: String(components[0]),
+            type: String(components[1]),
+            url: String(components[2])
+        )
     }
 }
 

@@ -28,4 +28,11 @@ final class AllureLabelsTests: XCTestCase {
 
         XCTFail()
     }
+
+    func testLinks() {
+        Allure.link(name: "ExampleIssue", type: .issue, url: "www.example.com")
+        Allure.link(name: "ExampleTms", type: .tms, url: "www.example.com")
+
+        XCTAssertTrue(2 + 2 == 4)
+    }
 }

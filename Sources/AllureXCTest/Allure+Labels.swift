@@ -1,6 +1,6 @@
 //
-//  Allure.swift
-//  
+//  Allure+Labels.swift
+//
 //
 //  Created by Vladislav Kiryukhin on 07.11.2022.
 //
