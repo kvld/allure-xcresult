@@ -20,4 +20,12 @@ final class AllureLabelsTests: XCTestCase {
 
         XCTFail()
     }
+
+    func testTags() {
+        Allure.tag("tag one")
+        Allure.tag("tag two")
+        Allure.tag("tag three")
+
+        XCTFail()
+    }
 }

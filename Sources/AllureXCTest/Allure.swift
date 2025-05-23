@@ -85,6 +85,10 @@ public enum Allure {
     public static func resultFormat(_ format: String) {
         labelStep(key: "resultFormat", value: format)
     }
+
+    public static func label(key: String, value: String) {
+        labelStep(key: key, value: value)
+    }
 }
 
 extension Allure {
